@@ -21,9 +21,10 @@ def decodeArray(array, st):
     sumation = np.sum(mult)
     x = (sumation / 2**array.size) * (st[1] - st[0]) + st[0]
     return x
-def getRandomChromosome(len, prop):
+
+def getRandomChromosome(length, prop):
     chromosome = []
-    for i in range(0,len):
+    for i in range(0,length):
         rand = random.random()
         allel = 0 if prop > rand else 1
         chromosome.append(allel)

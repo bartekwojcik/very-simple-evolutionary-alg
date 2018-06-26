@@ -19,4 +19,12 @@ class Individual(object):
     def fitnessValue(self,st):
         return self.valueFunction(self.decodeIndividual(st))
 
+    def relativeFitness(self,pop_fitness,st):
+        result = self.fitnessValue(st)/pop_fitness
+        return result
+
+    def __str__(self):
+        return self.chromosome
+
+
 
