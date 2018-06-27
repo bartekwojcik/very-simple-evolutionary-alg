@@ -49,7 +49,21 @@ class Population(object):
         off_one = half_one+two_hald
         off_two = one_half+half_two
 
-        return off_two,off_two
+        mutant_one = self.mutate(off_one)
+        mutant_two = self.mutate(off_two)
+
+        return off_one,off_two
+
+    def mutate(self,individual):
+        prop = 0.01
+        num_chrom = len(individual)
+        for c in range(num_chrom):
+            rand = random.random()
+            if rand <= prop:
+                chrom_val =individual[c]
+                chrom_val = 1- chrom_val
+                individual[c] = chrom_val
+        return individual
 
 
 def add_rec(list, tail_list):
