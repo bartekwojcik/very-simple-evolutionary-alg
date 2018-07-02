@@ -4,21 +4,22 @@ from utils import *
 import random
 
 
-class Population_proc(object):
+class Population(object):
 
-    def __init__(self, st):
+    def __init__(self, st, individuals):
         self.st = st
+        self.individuals = individuals
 
-    def whole_pop_fitness(self, population):
-        pop_fitnesses = list(map(lambda ind: ind.fitness_value(), population))
+    def whole_pop_fitness(self):
+        pop_fitnesses = list(map(lambda ind: ind.fitness_value(), self.individuals))
         sum_pop_fitness = sum(pop_fitnesses)
         return sum_pop_fitness
 
-    def get_pop_fitness_density(self, population):
+    def get_pop_fitness_density(self):
         # discovering python's collections, lol
 
-        pop_fitness = self.whole_pop_fitness(population)
-        d = list((i.relative_fitness(pop_fitness), i) for i in population)
+        pop_fitness = self.whole_pop_fitness()
+        d = list((i.relative_fitness(pop_fitness), i) for i in self.individuals)
         fit_list = d
 
         # rel_fitness = OrderedDict(sorted(rel_fitness_dict.items(),key=lambda t:t[0]))
@@ -60,9 +61,9 @@ class Population_proc(object):
         ind_two.mutate()
         return ind_one, ind_two
 
-    def get_mating_pool(self, popsize, dens):
+    def get_mating_pool(self, dens):
         mating_pool = []
-        for i in range(popsize):
+        for i in range(len(self.individuals)):
             rand = random.random()
             selected = next(x for x in dens if x[0] > rand)[1]
             mating_pool.append(selected)

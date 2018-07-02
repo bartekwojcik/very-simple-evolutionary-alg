@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import time
 from utils import *
 from individual import Individual
-from population import Population_proc
+from population import Population
 
 x = np.arange(-1, 2.0, 0.01)
 f = weird_function(x)
@@ -21,37 +21,76 @@ allels_num = 12
 # print(ind.fitnessValue(st))
 
 popsize = 10
-maxgen = 10
-current_population = []
+maxgen = 50
+ind_list = []
 for i in range(popsize):
     ind = Individual(weird_function, allels_num, st)
-    current_population.append(ind)
+    ind_list.append(ind)
 
-initial_values = list(map(lambda ind: ind.fitness_value(), current_population))
-initial_decodings = list(map(lambda ind: ind.decode_individual(), current_population))
+initial_values = list(map(lambda ind: ind.fitness_value(), ind_list))
+initial_decodings = list(map(lambda ind: ind.decode_individual(), ind_list))
+pop_list = []
 
-population_proc = Population_proc(st)
-pop_fitness = population_proc.whole_pop_fitness(current_population)
-test = sum(list(map(lambda ind: ind.relative_fitness(pop_fitness), current_population)))
-print(test)
-assert math.fabs(test - 1) <= 1e-7, "probability must sum to one!"
-
+#main loop
 for j in range(maxgen):
-    dens = population_proc.get_pop_fitness_density(current_population)
-    mating_pool = population_proc.get_mating_pool(popsize, dens)
+    population = Population(st, ind_list)
+    pop_fitness = population.whole_pop_fitness()
+    test = sum(list(map(lambda ind: ind.relative_fitness(pop_fitness), ind_list)))
+    assert math.fabs(test - 1) <= 1e-7, "probability must sum to one!"
+    dens = population.get_pop_fitness_density()
+    mating_pool = population.get_mating_pool(dens)
     random.shuffle(mating_pool)
-    current_population = population_proc.breed_population(mating_pool, allels_num, weird_function)
+    ind_list = population.breed_population(mating_pool, allels_num, weird_function)
+    pop_list.append(population)
 
-new_decodings = list(map(lambda ind: ind.decode_individual(), current_population))
-new_values = list(map(lambda ind: ind.fitness_value(), current_population))
+last_decodings = list(map(lambda ind: ind.decode_individual(), ind_list))
+last_values = list(map(lambda ind: ind.fitness_value(), ind_list))
 
 print('final max value:')
-print(max(new_values))
+print(max(last_values))
 print('final max decoding:')
-print(max(new_decodings))
+print(max(last_decodings))
 
+best_of_current_population = {}
+best_so_far = 0
+average_of_current_population = {}
+worst_of_current_population = {}
+
+for idx,pop in enumerate(pop_list):
+    fitness_list =[ind.fitness_value() for ind in pop.individuals]
+    best = max(fitness_list)
+    best_of_current_population[idx] = best
+    average_of_current_population[idx] = sum(fitness_list) / float(len(fitness_list))
+    worst_of_current_population[idx] = min(fitness_list)
+    if best > best_so_far:
+        best_so_far = best
+
+
+def simple_plot(x,y,label):
+    plt.plot(x, y, lw=1,
+             label=label)
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+               ncol=2, mode="expand", borderaxespad=0.)
+
+#plot best of current population
+plt.subplot(211)
+simple_plot(best_of_current_population.keys(), best_of_current_population.values(), label="best of current population")
+
+# plt.ylim(0,4)
+plt.xlim(0,len(best_of_current_population.keys()))
+#plot average of population
+plt.subplot(212)
+simple_plot(average_of_current_population.keys(), average_of_current_population.values(), label="average of population")
+
+plt.figure()
+#plot worst of population
+plt.subplot(211)
+simple_plot(worst_of_current_population.keys(), worst_of_current_population.values(), label="worst of current population")
+
+#initial / last values plot
+plt.subplot(212)
 line, = plt.plot(x, f, lw=2)
-plt.plot(new_decodings, new_values, 'ro', label="final values")
+plt.plot(last_decodings, last_values, 'ro', label="last values")
 plt.plot(initial_decodings, initial_values, 'bo',label="initial values")
 plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, mode="expand", borderaxespad=0.)
