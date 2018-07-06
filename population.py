@@ -20,6 +20,7 @@ class Population(object):
 
         pop_fitness = self.whole_pop_fitness()
         d = list((i.relative_fitness(pop_fitness), i) for i in self.individuals)
+        d.sort(key=lambda x: x[0], reverse=False)
         fit_list = d
 
         # rel_fitness = OrderedDict(sorted(rel_fitness_dict.items(),key=lambda t:t[0]))
@@ -41,7 +42,7 @@ class Population(object):
         return offspring_list
 
     def cross_them_over(self, one, two, allels_num, eval_func):
-        point = random.randint(1, allels_num - 1)
+        point = 6#random.randint(2, allels_num)
         all_one = one.chromosome
         all_two = two.chromosome
 
