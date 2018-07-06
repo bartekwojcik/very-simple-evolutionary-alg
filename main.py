@@ -20,8 +20,8 @@ allels_num = 12
 # print(ind.decodeIndividual(st))
 # print(ind.fitnessValue(st))
 
-popsize = 10
-maxgen = 50
+popsize = 20
+maxgen = 500
 ind_list = []
 for i in range(popsize):
     ind = Individual(weird_function, allels_num, st)
@@ -67,7 +67,7 @@ for idx,pop in enumerate(pop_list):
 
 
 def simple_plot(x,y,label):
-    plt.plot(x, y, lw=1,
+    plt.scatter(x, y, s=1,
              label=label)
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                ncol=2, mode="expand", borderaxespad=0.)

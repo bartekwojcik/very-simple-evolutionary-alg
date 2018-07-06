@@ -41,7 +41,7 @@ class Population(object):
         return offspring_list
 
     def cross_them_over(self, one, two, allels_num, eval_func):
-        point = random.randint(1, allels_num - 1)
+        point = 6#random.randint(1, allels_num - 1)
         all_one = one.chromosome
         all_two = two.chromosome
 
